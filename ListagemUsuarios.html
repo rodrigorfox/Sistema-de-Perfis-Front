@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Listagem de Usuários</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="./Styles.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  </head>
+  <body>
+    <div class="container">
+        <div>
+            <h1>Usuários</h1>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-sm-8 col-md-6">
+                <form class="separador" action="/#" method="POST">
+                    <div class="form-group row">
+                        <label for="empresa" class="col-sm-4 col-form-label">Empresa</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="empresa"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="perfil" class="col-sm-4 col-form-label">Perfil</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="perfil"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="nomeCompleto" class="col-sm-4 col-form-label">Nome Completo</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="nomeCompleto"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="email" class="col-sm-4 col-form-label">Email</label>
+                        <div class="col-sm-8">
+                            <input type="email" class="form-control" id="email"/>
+                        </div>
+                    </div>
+                    
+                    <input type="submit" class="btn btn-primary fa-pull-right" value="Pesquisar">
+                </form>
+            </div>
+            <div class="col-xs-6 offset-xs-6 col-sm-3 offset-sm-1  offset-md-3 separador">
+                <button class="btn btn-primary btn-block"><i class="fa fa-plus"></i> Adicionar Usuário</button>
+                <button class="btn btn-primary btn-block"><i class="fa fa-plus"></i> Adicionar Empresa</button>
+                <button class="btn btn-primary btn-block"><i class="fa fa-plus"></i> Adicionar Perfil</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 separador table-responsive">
+                <table class="table table-condensed table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div class="checkbox">
+                                    <input type="checkbox">
+                                </div>
+                            </th>
+                            <th>Empresa</th>
+                            <th>Perfil</th>
+                            <th>Nome Completo</th>
+                            <th>Email</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="checkbox">
+                                    <input type="checkbox">
+                                </div>
+                            </td>
+                            <td>Liga Educacional</td>
+                            <td>Programador</td>
+                            <td>Gabriel Espindola</td>
+                            <td>gabriel.espindola@ligaeducacional.com.br</td>
+                            <td>
+                                <button class="btn btn-primary ml-1">
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                </button>
+
+                                <button class="btn btn-success ml-1">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+
+                                <button class="btn btn-danger ml-1">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+      
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js" crossorigin="anonymous"></script>
+  </body>
+</html>

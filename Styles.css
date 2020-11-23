@@ -1,0 +1,11 @@
+.formulario { margin-top: 30px }
+#botoes{ text-align: center }
+.mesmo-tamanho {
+    width: 20%;
+    white-space: normal;
+}
+@media only screen and (min-width: 576px) {
+    label.col-sm-3 { text-align: right }
+    label.col-sm-4 { text-align: right }
+}
+.separador { margin-top: 30px }
