@@ -1,6 +1,13 @@
 var empresas = new Array()
 var usuarios = new Array()
 
+fetch("http://localhost:3000/usuario")
+.then(response => response.json())
+.then(jsonBody => {
+    jsonBody.forEach( a => $("select#usuario").append(`<option>${a.nomeCompleto}</option>`))
+    usuarios = [...jsonBody]
+})
+
 fetch("http://localhost:3000/empresa")
 .then(response => response.json())
 .then(jsonBody => {
@@ -8,12 +15,6 @@ fetch("http://localhost:3000/empresa")
     empresas = [...jsonBody]
 })
 
-fetch("http://localhost:3000/usuario")
-.then(response => response.json())
-.then(jsonBody => {
-    jsonBody.forEach( a => $("select#usuario").append(`<option>${a.nomeCompleto}</option>`))
-    usuarios = [...jsonBody]
-})
 
 //Envio de formulário de Perfis, pois o parametro de envio requer a busca das empresas e usuarios
 function onSubmitPerfil(event, data){
