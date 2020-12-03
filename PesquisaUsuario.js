@@ -1,73 +1,185 @@
+//Criando as variaveis que vão receber os dados que serão manipulados
 var usuarios = new Array()
+var pagina = new Array()
+var exibicao = new Array()
 
+//Classe Registro onde armazenará cada entrada por perfil separadamente em vez de um usuario com varios perfis
+class Registro {
+    empresa = null
+    perfil = null
+    usuario = null
+    email = null
+    id_usuario = null
+    id_perfil = null
+
+    constructor (empresa, perfil, usuario, email, id_usuario, id_perfil){
+        this.empresa = empresa
+        this.perfil = perfil
+        this.usuario = usuario
+        this.email = email
+        this.id_usuario = id_usuario
+        this.id_perfil = id_perfil
+    }
+}
+
+//Realizando a requisição GET do servidor e resgatando a resposta
 fetch("http://localhost:3000/usuario")
-.then(response => response.json())
+.then(response => {return response.json()})
 .then(jsonBody => {
     jsonBody.forEach( a => {
-        var i = 0;
+    var i = 0;
         do {
-            if (a.perfis.length == 0){
-                a.perfis.push({"nome":"Não cadastrado", "empresa":{"empresa":"Não cadastrada"}})
-            }
-            // console.log(a.id)
 
-            $("tbody#listagem").append(`<tr>
-            <td>
-            <div class="checkbox">
-            <input type="checkbox">
-            </div>
-            </td>
-            <td>${a.perfis[i].empresa.empresa}</td>
-            <td>${a.perfis[i].nome}</td>
-            <td>${a.nomeCompleto}</td>
-            <td>${a.email}</td>
-            <td>
-            <button class="btn btn-primary ml-1">
-            <i class="fa fa-eye" aria-hidden="true"></i>
-            </button>
-            
-            <button class="btn btn-success ml-1">
-            <i class="fa fa-edit"></i>
-            </button>
-            
-            <button type="button" class="btn btn-danger ml-1" data-toggle="modal" data-target="#confirm${a.id}">
-            <i class="fa fa-trash"></i>
-            </button>
+            //esse if verifica se o usuario tem um perfil, se não tiver, adiciona um não cadastrado a tag nome e a empresa para exibição na lista
+            if (a.perfis.length == 0)
+            a.perfis.push({"nome":"Não cadastrado", "empresa":{"empresa":"Não cadastrada"}})
 
-            <div class="modal fade" id="confirm${a.id}" role="dialog">
-                <div class="modal-dialog modal-md">
-
-                    <div class="modal-content">
-                    <div class="modal-body">
-                            <p><b>Deseja realmente excluir o usuário e todos os seus perfis?</b></p>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" id="delete" onclick="deletar(${a.id})">Deletar Registo</a>
-                        <button type="button" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
-                    </div>
-                    </div>
-
-                </div>
-            </div>
-            </td>
-            </tr>`)
+            //para cada item da resposta, cria-se um objeto Registro por perfil do usuario e adiciona em usuarios
+            const registro = new Registro(a.perfis[i].empresa.empresa,a.perfis[i].nome,a.nomeCompleto,a.email,a.id,a.perfis[i].id)
+            usuarios.push(registro)
             i += 1;
         } while (i < a.perfis.length);
     })
-    usuarios = [...jsonBody]
+
+    //O array exibição recebe um map que retorna para cada objeto, uma copia, fazendo uma compia completa do array de objetos
+    exibicao = usuarios.map((user) => {return {...user}})
+
+    //lista os usuarios a partir da copia atualizada e ativa a pagina 1 na exibição
+    listarUsuarios(exibicao,0)
+    ativar(1)
 })
 
-//Envio de formulario de cliente e empresa
-function deletar(data){
-    // event.preventDefault();
-
-    // let ob = {};
-    // var dt = JSON.stringify( $(data).serializeArray() );
-    // (JSON.parse(dt)).forEach(element => {
-    //         ob[element.name] = element.value;
-    // });
+//função para quando pesquisar a partir do formulario
+function pesquisarUsuarios(event, data){
+    //O metodo preventDefault() impede que a pagina atualize, assim a manipulação do html é exibida sem recarregar a pagina
+    event.preventDefault();
     
-    //criando com fetch
+    //resgatando os dados do formulario e colocando no padrão que o servidor precisa receber. ("nome" : "Yasmin")
+    let ob = {};
+    var dt = JSON.stringify( $(data).serializeArray() );
+    (JSON.parse(dt)).forEach(element => {
+        ob[element.name] = element.value;
+    });
+
+    //inicialmente atualiza a lista cópia com os dados contidos na lista completa de usuarios
+    exibicao = usuarios.map((user) => {return {...user}})
+
+    //Verifica se os campos do formularios estão preenchidos, se estiverem, ele filtra pela igualdade entre o campo escrito e o campo do registro
+    //Fazendo um filtro sobre o outro, consegue-se chegar a um filtro completo onde os 4 campos se coincidem
+    //Se nenhum campo for preenchido, ele naturalmente pulará todos e exibirá a lista completa
+    //Todo o resultado dos filtros será atribuido a cópia criada la em cima, atualizando a lista de registros sem alterar a retirada do servidor
+    if(ob.empresa != "")
+    exibicao = exibicao.filter(a => a.empresa.toUpperCase().includes(ob.empresa.toUpperCase()))
+
+    if(ob.perfil != "")
+    exibicao = exibicao.filter(a => a.perfil.toUpperCase().includes(ob.perfil.toUpperCase()))
+
+    if(ob.nomeCompleto != "")
+    exibicao = exibicao.filter(a => a.usuario.toUpperCase().includes(ob.nomeCompleto.toUpperCase()))
+    
+    if(ob.email != "")
+    exibicao = exibicao.filter(a => a.email.toUpperCase().includes(ob.email.toUpperCase()))
+
+    //A lista exibida será a resultante do filtro e ativa a pagina 1 na exibição
+    listarUsuarios(exibicao,0)
+    ativar(1)
+}
+
+//metodo para listar os usuarios que cria um elemento tr com os dados de cada registro passado para o metodo
+
+function listarUsuarios(lista,pag){
+
+    //O metodo separador() separa a lista recebida por parametros em paginas de 10 unidades 
+    pagina = separador(lista, 10)
+
+    //remove todas as linhas da tabela em exibição
+    $("#listagem tr").remove();
+
+    //Retorna cada elemento na pagina selecionada
+    pagina[pag].forEach( a => {
+        //padrão opção de usuario
+        var opcao = 1
+        var id = a.id_usuario
+        //se o usuario listado tiver algum perfil ele terá mais de um registro, logo, a deleção será do perfil e não do usuario completo
+        if(a.id_perfil != undefined){
+            opcao = 2
+            id = a.id_perfil
+        }
+
+        //cria o botão que vai chamar o modal de confirmação passando por parameto o id e o tipo
+        //Se o usuario não tiver perfil algum, o tipo de deleção apagará o registro do usuario
+        $("tbody#listagem").append(`<tr>
+                <td class="text-center">
+                    <div class="checkbox">
+                        <input type="checkbox">
+                    </div>
+                </td>
+                <td>${a.empresa}</td>
+                <td>${a.perfil}</td>
+                <td>${a.usuario}</td>
+                <td>${a.email}</td>
+                <td class="text-center">
+                    <i type="button" class="fa fa-eye" style="color: darkblue"></i>
+                    <i type="button" class="fa fa-edit" style="color: green"></i>
+                    <i type="button" onClick="abreModal(${opcao},${id})" class="fa fa-trash" style="color: darkred"></i>
+                </td>
+        </tr>`)
+    })
+
+    //Limpa os botões de navegação pois irá gerar uma quantidade nova
+    $("#navegacao button").remove();
+
+    //Cria os botões de primeira e ultima pagina, atribuindo a listagem para a primeira e ultima pagina
+    //Alem de ativar a pagina em questão
+    $("div#navegacao").append(`
+        <button type="button" class="btn btn-info btn-sm" id="primeira" onclick="listarUsuarios(exibicao, ${0}), ativar(${0+1})"><b><<</b></button>
+        <button type="button" class="btn btn-info btn-sm" id="ultima" onclick="listarUsuarios(exibicao, ${pagina.length-1}), ativar(${pagina.length})"><b>>></b></button>
+    `)
+
+    //Para cada item no array de paginas, ele cria um botão que chama o metodo exibir a pagina e o nomeia com o numero da pagina (i+1)
+    //Alem de ativar a pagina em questão
+    for(var i =0; i<pagina.length;i++){
+        $("button#ultima").before(`<button type="button" class="btn btn-info btn-sm" id="btn${i+1}" onclick="listarUsuarios(exibicao, ${i}), ativar(${i+1})">${i+1}</button>`)
+    }
+}
+    
+//Função para abrir o modal de confirmação de exclusão
+function abreModal(opcao, id) {
+
+    //remove o footer existente, onde ficam os botões que chamam o metodo deletar e fechar modal
+    $("div.modal-footer").remove()
+
+    //cria um novo footer contendo o metodo deletar passando o tipo de deleção e o id do usuario/perfil
+    $("div.modal-content").append(`
+    <div class="modal-footer">
+    <button type="button" class="btn btn-danger" id="delete" onclick="deletar(${opcao},${id})">Deletar Registo</a>
+    <button type="button" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
+    </div>
+    `)
+
+    //exibe o modal completo criado
+    $("#confirmar").modal({
+        show: true
+    });
+}
+    
+//Envio de formulario de cliente ou perfil para o servidor com a requisição DELETE
+function deletar(opcao, id){
+    var url = null
+
+    //Identifica qual tipo de url será enviada, seguindo o parametro recebido
+    switch (opcao) {
+        case 1:
+            url = "usuario";
+            break;
+        case 2:
+            url = "perfil";
+            break;
+        default:
+            url = "empresa";
+    }
+
+    //Opções que serão passadas por parametro
     const options = {
         method: 'DELETE',
         headers: {
@@ -77,26 +189,56 @@ function deletar(data){
         mode: 'cors',
         cache: 'default'
     }
-    var url = data
-    console.log(data)
-    fetch(`http://localhost:3000/usuario/${url}`, options)
-        .then(response => response.json())
-        .then(jsonBody => mostrarResposta(jsonBody))
-        .then(erro => mostrarErro(erro))
 
-        window.location.reload(true)
+    //requisição DELETE
+    fetch(`http://localhost:3000/${url}/${id}`, options)
+    .then(response => response.json())
+    .then(jsonBody => console.log(jsonBody))
+    .then(window.location.reload(true))
 }
 
-function mostrarResposta(body){
-    if(body.id == undefined)
-    return body
-    $("div#msgStatus").html(`<div class="alert alert-success" role="alert">${url} inserido com sucesso</div>`)
-    return true
+//Metodo responsável por separar a lista em páginas
+function separador(usuarios, maximo) {
+    var lista = [[]];
+    var indice = 0;
+  
+    for (var i = 0; i < usuarios.length; i++) {
+      if (lista[indice] === undefined) {
+        lista[indice] = [];
+      }
+
+      //adiciona cada usuario vindo do for a lista no indice atual
+      lista[indice].push(usuarios[i]);
+
+      //aumenta o indice da pagina quando chega ao limite especificado por parametro
+      if ((i + 1) % maximo === 0) {
+        indice = indice + 1;
+      }
+    }
+    return lista;
 }
 
-function mostrarErro(erro){
-    if(erro.mensagem != undefined)
-    $("div#msgStatus").html(`<div class="alert alert-danger" role="alert">${erro.mensagem}</div>`)
+//Função que remove o atributo class do botão de navegação e insere um novo atributo class igual porém com a adição do active
+//tentei apenas inserir o active, mas ele remove sozinho todos os outros atributos
+function ativar(id){
+    $("#btn" + id).removeAttr("class")
+    $("#btn" + id).attr("class","btn btn-info btn-sm active")
 }
 
-//Pesquisa de Usuarios, pois o parametro de envio requer o Array de usuarios
+//metodo para selecionar todos os checkbox quando seleciona o checkbox do titulo e desmarca da mesma maneira
+function toggleChecked(){
+    var inputs = listagem.getElementsByTagName("input");
+    var input = document.getElementById("toggle");
+
+    if(input.checked == true){
+        $.each(inputs, function(i,value){
+            inputs[i].checked = true
+        })
+    }
+
+    if(input.checked == false){
+        $.each(inputs, function(i,value){
+            inputs[i].checked = false
+        })
+    }
+}

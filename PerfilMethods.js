@@ -1,13 +1,13 @@
 var empresas = new Array()
 var usuarios = new Array()
-
+//Realizando a requisição GET do servidor e resgatando a resposta
 fetch("http://localhost:3000/usuario")
 .then(response => response.json())
 .then(jsonBody => {
     jsonBody.forEach( a => $("select#usuario").append(`<option>${a.nomeCompleto}</option>`))
     usuarios = [...jsonBody]
 })
-
+//Realizando a requisição GET do servidor e resgatando a resposta
 fetch("http://localhost:3000/empresa")
 .then(response => response.json())
 .then(jsonBody => {
@@ -15,7 +15,7 @@ fetch("http://localhost:3000/empresa")
     empresas = [...jsonBody]
 })
 
-
+//A PAGINA DE PERFIS POSSUI UM METODO DE ENVIO PROPRIO POIS OS PARAMETROS SÃO ESPECÍFICOS
 //Envio de formulário de Perfis, pois o parametro de envio requer a busca das empresas e usuarios
 function onSubmitPerfil(event, data){
     event.preventDefault();
@@ -30,7 +30,7 @@ function onSubmitPerfil(event, data){
     const empresa = empresas.filter( empresa => empresa.empresa == ob.id_empresa )
     ob.id_empresa = empresa[0].id
 
-    //criando com fetch
+    //Opções que serão passadas por parametro
     const options = {
         method: 'POST',
         body: JSON.stringify(ob),
@@ -42,9 +42,10 @@ function onSubmitPerfil(event, data){
         cache: 'default'
     }
     var url = "perfil"
-    
+    //requisição POST
     fetch(`http://localhost:3000/${url}`, options)
         .then(response => response.json())
+        //os metodos de resposta já estão escritos no JS da pagina de usuarios e empresas
         .then(jsonBody => mostrarResposta(jsonBody,url))
         .then(erro => mostrarErro(erro))
 }
