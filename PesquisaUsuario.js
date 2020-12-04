@@ -11,14 +11,18 @@ class Registro {
     email = null
     id_usuario = null
     id_perfil = null
+    username = null
+    senha = null
 
-    constructor (empresa, perfil, usuario, email, id_usuario, id_perfil){
+    constructor (empresa, perfil, usuario, email, id_usuario, id_perfil,username, senha){
         this.empresa = empresa
         this.perfil = perfil
         this.usuario = usuario
         this.email = email
         this.id_usuario = id_usuario
         this.id_perfil = id_perfil
+        this.username = username
+        this.senha = senha
     }
 }
 
@@ -35,7 +39,7 @@ fetch("http://localhost:3000/usuario")
             a.perfis.push({"nome":"Não cadastrado", "empresa":{"empresa":"Não cadastrada"}})
 
             //para cada item da resposta, cria-se um objeto Registro por perfil do usuario e adiciona em usuarios
-            const registro = new Registro(a.perfis[i].empresa.empresa,a.perfis[i].nome,a.nomeCompleto,a.email,a.id,a.perfis[i].id)
+            const registro = new Registro(a.perfis[i].empresa.empresa,a.perfis[i].nome,a.nomeCompleto,a.email,a.id,a.perfis[i].id, a.username, a.senha)
             usuarios.push(registro)
             i += 1;
         } while (i < a.perfis.length);
@@ -105,7 +109,7 @@ function listarUsuarios(lista,pag){
             opcao = 2
             id = a.id_perfil
         }
-
+        
         //cria o botão que vai chamar o modal de confirmação passando por parameto o id e o tipo
         //Se o usuario não tiver perfil algum, o tipo de deleção apagará o registro do usuario
         $("tbody#listagem").append(`<tr>
@@ -119,11 +123,12 @@ function listarUsuarios(lista,pag){
                 <td>${a.usuario}</td>
                 <td>${a.email}</td>
                 <td class="text-center">
-                    <i type="button" class="fa fa-eye" style="color: darkblue"></i>
-                    <i type="button" class="fa fa-edit" style="color: green"></i>
-                    <i type="button" onClick="abreModal(${opcao},${id})" class="fa fa-trash" style="color: darkred"></i>
+                    <i type="button" onClick="abreModal(1,${a.id_usuario})" class="fa fa-eye" style="color: darkblue"></i>
+                    <i type="button" onClick="abreModal(2,${a.id_usuario})" class="fa fa-edit" style="color: green"></i>
+                    <i type="button" onClick="abreModalDelecao(${opcao},${id})" class="fa fa-trash" style="color: darkred"></i>
                 </td>
         </tr>`)
+        
     })
 
     //Limpa os botões de navegação pois irá gerar uma quantidade nova
@@ -143,19 +148,102 @@ function listarUsuarios(lista,pag){
     }
 }
     
-//Função para abrir o modal de confirmação de exclusão
+//Função para abrir o modal de visualização e Edição
 function abreModal(opcao, id) {
+    usuario = exibicao.filter(a=> a.id_usuario == id)
+    if (usuario[0].id_perfil == undefined){
+        $("div.modal-body input#perfil").attr("disabled","true")
+    } else {
+        $("div.modal-body input#perfil").removeAttr("disabled")
+    }
+    
+    if(opcao == 1){
+    $("fieldset#modalExibir").attr("disabled","true")
+    $("div.modal-body input#alterar").attr("disabled","true")
+    }
 
-    //remove o footer existente, onde ficam os botões que chamam o metodo deletar e fechar modal
-    $("div.modal-footer").remove()
+    if(opcao == 2){
+    $("fieldset#modalExibir").removeAttr("disabled")
+    $("div.modal-body input#alterar").removeAttr("disabled")
+    }
 
-    //cria um novo footer contendo o metodo deletar passando o tipo de deleção e o id do usuario/perfil
-    $("div.modal-content").append(`
-    <div class="modal-footer">
-    <button type="button" class="btn btn-danger" id="delete" onclick="deletar(${opcao},${id})">Deletar Registo</a>
-    <button type="button" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
-    </div>
-    `)
+    $("div.modal-body input#nomeCompleto").removeAttr("value")
+    $("div.modal-body input#nomeCompleto").attr("value",`${usuario[0].usuario}`)
+
+    $("div.modal-body input#email").removeAttr("value")
+    $("div.modal-body input#email").attr("value",`${usuario[0].email}`)
+
+    $("div.modal-body input#username").removeAttr("value")
+    $("div.modal-body input#username").attr("value",`${usuario[0].username}`)
+
+    $("div.modal-body input#senha").removeAttr("value")
+
+    $("div.modal-body input#perfil").removeAttr("value")
+    $("div.modal-body input#perfil").attr("value",`${usuario[0].perfil}`)
+    
+    $("div.modal-body input#empresa").removeAttr("value")
+    $("div.modal-body input#empresa").attr("value",`${usuario[0].empresa}`)
+    
+    $("div.modal-body form").removeAttr("onsubmit")
+    $("div.modal-body form").attr("onsubmit",`alterarDados(event, this,${usuario[0].id_usuario},${usuario[0].id_perfil})`)
+
+    //exibe o modal completo criado
+    $("#visualizar").modal({
+        show: true
+    });
+}
+
+function alterarDados(event, data,id_usuario,id_perfil){
+    event.preventDefault();
+
+    let ob = {};
+    var dt = JSON.stringify( $(data).serializeArray() );
+    (JSON.parse(dt)).forEach(element => {
+        ob[element.name] = element.value;
+    });
+
+    //Opções que serão passadas por parametro
+    const options = {
+        method: 'PATCH',
+        body: JSON.stringify(ob),
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
+        mode: 'cors',
+        cache: 'default'
+    }
+    
+    //requisição PATCH
+    fetch(`http://localhost:3000/usuario/${id_usuario}`, options)
+        .then(response => response.json())
+        .then(window.location.reload(true))
+
+    if (ob.nome != undefined){
+        let pfl = {}
+        pfl["nome"] = ob.nome
+
+        const options = {
+            method: 'PATCH',
+            body: JSON.stringify(pfl),
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            },
+            mode: 'cors',
+            cache: 'default'
+        }
+        
+        //requisição PATCH
+        fetch(`http://localhost:3000/perfil/${id_perfil}`, options)
+            .then(response => response.json())
+    }
+}
+
+//Função para abrir o modal de confirmação de exclusão
+function abreModalDelecao(opcao, id) {
+    $("button#delete").removeAttr("onclick")
+    $("button#delete").attr("onclick",`deletar(${opcao},${id})`)
 
     //exibe o modal completo criado
     $("#confirmar").modal({
@@ -193,7 +281,6 @@ function deletar(opcao, id){
     //requisição DELETE
     fetch(`http://localhost:3000/${url}/${id}`, options)
     .then(response => response.json())
-    .then(jsonBody => console.log(jsonBody))
     .then(window.location.reload(true))
 }
 

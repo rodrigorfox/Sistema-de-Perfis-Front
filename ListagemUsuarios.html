@@ -86,6 +86,66 @@
                         <div class="modal-body">
                                 <p class="text-center"><b>Deseja realmente excluir o registro?</b></p>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" id="delete" >Deletar Registo</a>
+                            <button type="button" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="visualizar" role="dialog">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="text-center"><h3>Usuário</h3></p>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <fieldset id="modalExibir">
+                                    <div class="form-group row">
+                                        <label for="nomeCompleto" class="col-sm-4 col-form-label">Nome</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="nomeCompleto" name="nomeCompleto"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="email" class="col-sm-4 col-form-label">E-mail</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="email" name="email"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="username" class="col-sm-4 col-form-label">Usuario</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="username" name="username"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="senha" class="col-sm-4 col-form-label">Senha</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="senha" name="senha"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="perfil" class="col-sm-4 col-form-label">Perfil</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="perfil" name="nome"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="empresa" class="col-sm-4 col-form-label">Empresa</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control" id="empresa" name="empresa" disabled/>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <div id="botoes">
+                                    <input type="button" class="btn btn-primary mesmo-tamanho" value="Cancelar" name="cancelar" data-dismiss="modal">
+                                    <input type="submit" class="btn btn-primary mesmo-tamanho" id="alterar" value="Salvar" name="salvar">
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
