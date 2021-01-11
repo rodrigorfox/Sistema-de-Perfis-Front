@@ -123,8 +123,8 @@ function listarUsuarios(lista,pag){
                 <td>${a.usuario}</td>
                 <td>${a.email}</td>
                 <td class="text-center">
-                    <i type="button" onClick="abreModal(1,${a.id_usuario})" class="fa fa-eye" style="color: darkblue"></i>
-                    <i type="button" onClick="abreModal(2,${a.id_usuario})" class="fa fa-edit" style="color: green"></i>
+                    <i type="button" onClick="abreModal(1,${a.id_usuario},${a.id_perfil})" class="fa fa-eye" style="color: darkblue"></i>
+                    <i type="button" onClick="abreModal(2,${a.id_usuario},${a.id_perfil})" class="fa fa-edit" style="color: green"></i>
                     <i type="button" onClick="abreModalDelecao(${opcao},${id})" class="fa fa-trash" style="color: darkred"></i>
                 </td>
         </tr>`)
@@ -149,8 +149,8 @@ function listarUsuarios(lista,pag){
 }
     
 //Função para abrir o modal de visualização e Edição
-function abreModal(opcao, id) {
-    usuario = exibicao.filter(a=> a.id_usuario == id)
+function abreModal(opcao, id, perfil) {
+    usuario = exibicao.filter(a=> a.id_usuario == id && a.id_perfil === perfil)
     if (usuario[0].id_perfil == undefined){
         $("div.modal-body input#perfil").attr("disabled","true")
     } else {

@@ -42,8 +42,8 @@ function onSubmit(event, data){
 function mostrarResposta(body,url){
     if(body.id == undefined)
     return body
-    // $("div#msgStatus").html(`<div class="alert alert-success" role="alert">${url} inserido com sucesso</div>`)
-    confirm(`${url} inserido com sucesso`)
+    $("div#msgStatus").html(`<div class="alert alert-success" role="alert">${url} inserido com sucesso</div>`)
+    // confirm(`${url} inserido com sucesso`)
     return true
 }
 
